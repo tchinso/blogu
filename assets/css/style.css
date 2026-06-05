@@ -54,8 +54,8 @@ body {
   overflow-x: hidden;
   overflow-y: scroll;
   background-image:
-    url("/assets/images/lec/mr_bg_2.png"),
-    url("/assets/images/lec/mr_bg_1.png");
+    url("../images/lec/mr_bg_2.png"),
+    url("../images/lec/mr_bg_1.png");
   background-repeat: repeat, repeat;
   color: var(--lec-def);
   font-family: var(--lec-font-def);
@@ -366,7 +366,7 @@ pre {
   height: 53px;
   top: -30px;
   right: -20px;
-  background-image: url("/assets/images/lec/mr_icon_2.png");
+  background-image: url("../images/lec/mr_icon_2.png");
 }
 
 .lec-profile-heart {
@@ -374,7 +374,7 @@ pre {
   height: 90px;
   bottom: 15px;
   left: -48px;
-  background-image: url("/assets/images/lec/mr_icon_1.png");
+  background-image: url("../images/lec/mr_icon_1.png");
 }
 
 .lec-category {
@@ -397,7 +397,7 @@ pre {
   min-height: 43px;
   border: 3px solid var(--lec-point-bd);
   border-radius: 50px;
-  background-image: url("/assets/images/lec/mr_bg_pt.png");
+  background-image: url("../images/lec/mr_bg_pt.png");
   background-repeat: repeat;
   background-position: center;
 }
@@ -458,12 +458,12 @@ pre {
 
 .lec-category-item:nth-child(odd) .lec-category-link::before,
 .lec-category-item:nth-child(odd) .lec-category-link::after {
-  background-image: url("/assets/images/lec/mr_cate_icon_1.png");
+  background-image: url("../images/lec/mr_cate_icon_1.png");
 }
 
 .lec-category-item:nth-child(even) .lec-category-link::before,
 .lec-category-item:nth-child(even) .lec-category-link::after {
-  background-image: url("/assets/images/lec/mr_cate_icon_2.png");
+  background-image: url("../images/lec/mr_cate_icon_2.png");
 }
 
 .lec-main-sticker,
@@ -480,7 +480,7 @@ pre {
   height: 120px;
   top: -68px;
   right: -68px;
-  background-image: url("/assets/images/lec/mr_icon_4.png");
+  background-image: url("../images/lec/mr_icon_4.png");
 }
 
 .lec-main-wave {
@@ -488,7 +488,7 @@ pre {
   height: 77px;
   bottom: 30px;
   left: -120px;
-  background-image: url("/assets/images/lec/mr_icon_5.png");
+  background-image: url("../images/lec/mr_icon_5.png");
 }
 
 .lec-main-content {
@@ -628,7 +628,7 @@ pre {
   top: -15px;
   left: 50%;
   transform: translateX(-50%);
-  background: url("/assets/images/lec/mr_icon_3.png") no-repeat center / 100%;
+  background: url("../images/lec/mr_icon_3.png") no-repeat center / 100%;
 }
 
 .lec-notice-cover {
@@ -668,7 +668,7 @@ pre {
   position: relative;
   width: 220px;
   height: 260px;
-  background-image: url("/assets/images/lec/mr_bg_pt.png");
+  background-image: url("../images/lec/mr_bg_pt.png");
   background-repeat: repeat;
   border: 2px solid var(--lec-point-bd);
   border-radius: 13px;
@@ -1160,7 +1160,7 @@ pre {
   flex-direction: column;
   justify-content: center;
   color: var(--lec-point);
-  background-image: url("/assets/images/lec/mr_bg_pt.png");
+  background-image: url("../images/lec/mr_bg_pt.png");
   border: 2px solid var(--lec-point-bd);
   border-radius: 13px;
   font-size: 12px;
@@ -1333,8 +1333,8 @@ pre {
   overflow-y: auto;
   overflow-x: hidden;
   background-image:
-    url("/assets/images/lec/mr_bg_2.png"),
-    url("/assets/images/lec/mr_bg_1.png");
+    url("../images/lec/mr_bg_2.png"),
+    url("../images/lec/mr_bg_1.png");
   background-repeat: repeat, repeat;
   transition: .25s ease-in-out;
 }
@@ -1418,7 +1418,7 @@ pre {
     height: 33px;
     display: block;
     pointer-events: none;
-    background: url("/assets/images/lec/mr_cate_icon_1.png") no-repeat center / 21px 21px;
+    background: url("../images/lec/mr_cate_icon_1.png") no-repeat center / 21px 21px;
     transform: translate3d(-100px, -100px, 0);
   }
 

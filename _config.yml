@@ -3,8 +3,8 @@ description: "GitHub Pages와 Jekyll로 운영하는 번호형 핑크 다이어�
 lang: "ko"
 timezone: "Asia/Seoul"
 
-url: "https://syk04403.github.io"
-baseurl: ""
+url: "https://tchinso.github.io"
+baseurl: "/blogu"
 
 markdown: kramdown
 highlighter: rouge
@@ -24,21 +24,19 @@ defaults:
       type: "blog"
     values:
       layout: "post"
-      thumbnail: "/assets/images/profile/mascot.png"
+      thumbnail: "assets/images/profile/mascot.png"
   - scope:
       path: ""
     values:
       layout: "default"
 
-default_thumbnail: "/assets/images/profile/mascot.png"
+default_thumbnail: "assets/images/profile/mascot.png"
 
 exclude:
   - docs/
-  - node_modules/
-  - package.json
-  - package-lock.json
   - Gemfile
   - Gemfile.lock
   - README.md
+  - wrangler.toml
   - .codex-preview/
   - _site/
