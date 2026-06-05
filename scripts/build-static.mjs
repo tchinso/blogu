@@ -18,8 +18,8 @@ const args = Object.fromEntries(
 );
 
 const site = {
-  title: "Paint Heart Atelier",
-  description: "GitHub Pages와 Jekyll로 운영하는 번호형 핑크 다이어리 블로그",
+  title: "NyanKat's blog",
+  description: "냥캣의 블로그",
   lang: "ko",
   url: args.url ?? "https://blogu.pages.dev",
   baseurl: args.baseurl ?? "",
