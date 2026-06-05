@@ -351,6 +351,7 @@ function postPage(post, ascendingPosts) {
 await fs.rm(outDir, { recursive: true, force: true });
 await fs.mkdir(outDir, { recursive: true });
 await fs.cp(path.join(root, "assets"), path.join(outDir, "assets"), { recursive: true });
+await fs.copyFile(path.join(root, "_redirects"), path.join(outDir, "_redirects"));
 
 const allPosts = await loadPosts();
 const publishedDesc = allPosts

@@ -1,23 +1,10 @@
-# Fallback for a Cloudflare Pages project that is accidentally configured to
-# deploy the repository root instead of the generated _site directory.
-#
-# Intended Cloudflare settings:
-#   Build command: npm run build
+# Cloudflare Pages serves this file from the generated build output directory.
+# Project settings:
+#   Build command: npm run build:cloudflare
 #   Build output directory: _site
 
-/_site /_site/index.html 200
-/_site/ /_site/index.html 200
-/_site/* /_site/:splat 200
-
-/posts/:id /_site/posts/:id/index.html 200
-/posts/:id/ /_site/posts/:id/index.html 200
-/archive /_site/archive/index.html 200
-/archive/ /_site/archive/index.html 200
-/tags /_site/tags/index.html 200
-/tags/ /_site/tags/index.html 200
-/projects /_site/projects/index.html 200
-/projects/ /_site/projects/index.html 200
-/about /_site/about/index.html 200
-/about/ /_site/about/index.html 200
-/ /_site/index.html 200
-/* /_site/:splat 200
+/posts/:id /posts/:id/index.html 200
+/archive /archive/index.html 200
+/tags /tags/index.html 200
+/projects /projects/index.html 200
+/about /about/index.html 200

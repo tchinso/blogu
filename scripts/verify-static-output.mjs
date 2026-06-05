@@ -64,6 +64,7 @@ const published = posts.filter((post) => !post.draft);
 
 await assertFileExists(path.join(outDir, "index.html"), "Home page");
 await assertFileExists(path.join(outDir, "archive", "index.html"), "Archive page");
+await assertFileExists(path.join(outDir, "_redirects"), "Cloudflare redirects");
 
 for (const post of posts) {
   await assertFileExists(path.join(outDir, "posts", post.id, "index.html"), `Post ${post.id}`);
@@ -71,6 +72,7 @@ for (const post of posts) {
 
 const homeHtml = await readOutput("index.html");
 const archiveHtml = await readOutput(path.join("archive", "index.html"));
+const redirects = await readOutput("_redirects");
 const rawTemplatePatterns = [
   /^---\s*$/m,
   /\{%\s*(assign|include|for|if)\b/,
@@ -93,6 +95,10 @@ for (const post of published) {
   if (!archiveHtml.includes(link)) {
     throw new Error(`Published post ${post.id} is missing from archive output.`);
   }
+}
+
+if (redirects.includes("/_site/")) {
+  throw new Error("Cloudflare redirects should point inside the build output, not to /_site paths.");
 }
 
 console.log(`Verified _site output: ${published.length} published post(s), ${posts.length} total post file(s).`);
