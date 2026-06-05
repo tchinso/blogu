@@ -370,4 +370,7 @@ for (const post of allPosts) {
   await writePage(post.url, shell({ title: post.title, layout: "post", content: postPage(post, publishedAsc) }));
 }
 
-console.log(`Built ${path.relative(root, outDir)} for ${site.url}${site.baseurl || ""}/`);
+console.log(
+  `Built ${path.relative(root, outDir)} with ${publishedDesc.length} published post(s) ` +
+    `from ${allPosts.length} markdown file(s) for ${site.url}${site.baseurl || ""}/`
+);

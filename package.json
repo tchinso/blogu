@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-static.mjs",
-    "build:cloudflare": "node scripts/build-static.mjs --url=https://blogu.pages.dev --baseurl=",
-    "build:github-preview": "node scripts/build-static.mjs --url=https://tchinso.github.io --baseurl=/blogu"
+    "build": "node scripts/build-static.mjs && node scripts/verify-static-output.mjs",
+    "build:cloudflare": "node scripts/build-static.mjs --url=https://blogu.pages.dev --baseurl= && node scripts/verify-static-output.mjs",
+    "build:github-preview": "node scripts/build-static.mjs --url=https://tchinso.github.io --baseurl=/blogu && node scripts/verify-static-output.mjs",
+    "verify": "node scripts/verify-static-output.mjs"
   },
   "dependencies": {
     "markdown-it": "^14.1.0",

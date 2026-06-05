@@ -1,0 +1,7 @@
+.jekyll-cache/
+.sass-cache/
+.bundle/
+node_modules/
+vendor/
+Gemfile.lock
+.codex-preview*/
