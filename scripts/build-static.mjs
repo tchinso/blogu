@@ -1,14 +1,20 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import MarkdownIt from "markdown-it";
 import markdownItFootnote from "markdown-it-footnote";
 import markdownItDeflist from "markdown-it-deflist";
 import markdownItMark from "markdown-it-mark";
 import markdownItTaskLists from "markdown-it-task-lists";
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const outDir = path.join(root, "_site");
+import {
+  root,
+  outDir,
+  parseFrontMatter,
+  readPostEntries,
+  escapeHtml,
+  dateDots,
+  searchText,
+  emptyNote
+} from "./lib/shared.mjs";
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((arg) => {
@@ -40,13 +46,6 @@ const md = new MarkdownIt({ html: true, linkify: true, typographer: true })
   .use(markdownItMark)
   .use(markdownItTaskLists, { enabled: true, label: true });
 
-const escapeHtml = (value = "") =>
-  String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-
 const stripLeadingSlash = (value) => String(value).replace(/^\/+/, "");
 
 const relativeUrl = (value = "") => {
@@ -62,42 +61,9 @@ const absoluteUrl = (value = "") => `${site.url.replace(/\/$/, "")}${relativeUrl
 const renderLiquidLite = (text) =>
   text.replace(/\{\{\s*['"]([^'"]+)['"]\s*\|\s*relative_url\s*\}\}/g, (_, target) => relativeUrl(target));
 
-function parseFrontMatter(text) {
-  const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
-  if (!match) return { data: {}, body: text };
-
-  const data = {};
-  for (const line of match[1].split(/\r?\n/)) {
-    const index = line.indexOf(":");
-    if (index < 0) continue;
-    const key = line.slice(0, index).trim();
-    let value = line.slice(index + 1).trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    } else if (value.startsWith("[") && value.endsWith("]")) {
-      value = value
-        .slice(1, -1)
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean);
-    } else if (value === "true") {
-      value = true;
-    } else if (value === "false") {
-      value = false;
-    }
-    data[key] = value;
-  }
-
-  return { data, body: match[2] };
-}
-
 async function readMarkdown(filePath) {
   const source = await fs.readFile(path.join(root, filePath), "utf8");
   return parseFrontMatter(source);
-}
-
-function dateDots(date) {
-  return String(date || "").replaceAll("-", ".");
 }
 
 function navList() {
@@ -148,8 +114,7 @@ function dday() {
 }
 
 function galleryCard(post) {
-  const search = [post.title, post.description, post.category, ...(post.tags || [])].join(" ").toLowerCase();
-  return `<li class="lec-gallery-item" data-search-item data-search-text="${escapeHtml(search)}">
+  return `<li class="lec-gallery-item" data-search-item data-search-text="${escapeHtml(searchText(post.title, post.description, post.category, post.tags))}">
   <a class="lec-gallery-link" href="${relativeUrl(post.url)}">
     <div class="lec-gallery-thumb"><img src="${relativeUrl(post.thumbnail || site.defaultThumbnail)}" alt="${escapeHtml(post.title)}"></div>
     <div class="lec-gallery-info">
@@ -236,23 +201,15 @@ async function writePage(route, html) {
 }
 
 async function loadPosts() {
-  const entries = await fs.readdir(path.join(root, "_blog"));
+  const entries = await readPostEntries();
   const posts = [];
-  for (const entry of entries.filter((name) => /^\d{5}\.md$/.test(name)).sort()) {
-    const { data, body } = await readMarkdown(path.join("_blog", entry));
-    const id = entry.replace(/\.md$/, "");
+  for (const entry of entries) {
+    const { body } = await readMarkdown(path.join("_blog", entry.name));
     const html = md.render(renderLiquidLite(body));
     posts.push({
-      id,
-      name: entry,
-      title: data.title || id,
-      date: data.date || "",
-      tags: Array.isArray(data.tags) ? data.tags : [],
-      category: data.category || "notes",
-      description: data.description || "",
-      draft: data.draft === true,
-      thumbnail: data.thumbnail || site.defaultThumbnail,
-      url: `posts/${id}/`,
+      ...entry,
+      thumbnail: entry.thumbnail || site.defaultThumbnail,
+      url: `posts/${entry.id}/`,
       html
     });
   }
@@ -280,7 +237,7 @@ function homePage(posts) {
   </div>
   <section class="lec-gallery-cover">
     <h2 class="lec-cover-title">Recent</h2>
-    ${posts.length ? `<ul class="lec-gallery-list">${posts.slice(0, 8).map(galleryCard).join("")}</ul>` : `<p class="lec-soft-note">아직 공개된 글이 없어요.</p>`}
+    ${posts.length ? `<ul class="lec-gallery-list">${posts.slice(0, 8).map(galleryCard).join("")}</ul>` : emptyNote("아직 공개된 글이 없어요.")}
   </section>
 </section>`;
 }
@@ -289,15 +246,14 @@ function archivePage(posts) {
   return `<section class="lec-page-section">
   <h1 class="lec-page-title">Archive</h1>
   ${posts.length ? `<ol class="lec-post-list">${posts.map((post) => {
-    const search = [post.title, post.description, post.category, ...post.tags].join(" ").toLowerCase();
-    return `<li class="lec-post-list-item" data-search-item data-search-text="${escapeHtml(search)}">
+    return `<li class="lec-post-list-item" data-search-item data-search-text="${escapeHtml(searchText(post.title, post.description, post.category, post.tags))}">
       <a href="${relativeUrl(post.url)}">
         <span class="lec-post-list-number">${post.id}</span>
         <span class="lec-post-list-main"><strong>${escapeHtml(post.title)}</strong><small>${escapeHtml(post.description)}</small></span>
         <time datetime="${escapeHtml(post.date)}">${dateDots(post.date)}</time>
       </a>
     </li>`;
-  }).join("")}</ol>` : `<p class="lec-soft-note">아직 공개된 글이 없어요.</p>`}
+  }).join("")}</ol>` : emptyNote("아직 공개된 글이 없어요.")}
 </section>`;
 }
 
@@ -305,11 +261,11 @@ function tagsPage(posts) {
   const tags = [...new Set(posts.flatMap((post) => post.tags))].sort();
   return `<section class="lec-page-section">
   <h1 class="lec-page-title">Tags</h1>
-  ${tags.length ? `<div class="lec-tag-cloud">${tags.map((tag) => `<a href="#tag-${encodeURIComponent(tag)}" data-search-item data-search-text="${escapeHtml(tag.toLowerCase())}">#${escapeHtml(tag)}</a>`).join("")}</div>
+  ${tags.length ? `<div class="lec-tag-cloud">${tags.map((tag) => `<a href="#tag-${encodeURIComponent(tag)}" data-search-item data-search-text="${escapeHtml(searchText(tag))}">#${escapeHtml(tag)}</a>`).join("")}</div>
   ${tags.map((tag) => `<section class="lec-tag-section" id="tag-${encodeURIComponent(tag)}">
     <h2>#${escapeHtml(tag)}</h2>
-    <ul class="lec-compact-list">${posts.filter((post) => post.tags.includes(tag)).map((post) => `<li data-search-item data-search-text="${escapeHtml([post.title, post.description, tag].join(" ").toLowerCase())}"><a href="${relativeUrl(post.url)}">${escapeHtml(post.title)}</a><time datetime="${escapeHtml(post.date)}">${dateDots(post.date)}</time></li>`).join("")}</ul>
-  </section>`).join("")}` : `<p class="lec-soft-note">아직 태그가 없어요.</p>`}
+    <ul class="lec-compact-list">${posts.filter((post) => post.tags.includes(tag)).map((post) => `<li data-search-item data-search-text="${escapeHtml(searchText(post.title, post.description, tag))}"><a href="${relativeUrl(post.url)}">${escapeHtml(post.title)}</a><time datetime="${escapeHtml(post.date)}">${dateDots(post.date)}</time></li>`).join("")}</ul>
+  </section>`).join("")}` : emptyNote("아직 태그가 없어요.")}
 </section>`;
 }
 
@@ -330,7 +286,7 @@ function postPage(post, ascendingPosts) {
   const index = ascendingPosts.findIndex((item) => item.id === post.id);
   const prev = index > 0 ? ascendingPosts[index - 1] : null;
   const next = index < ascendingPosts.length - 1 ? ascendingPosts[index + 1] : null;
-  return `<article class="lec-post" data-search-item data-search-text="${escapeHtml([post.title, post.description].join(" ").toLowerCase())}">
+  return `<article class="lec-post" data-search-item data-search-text="${escapeHtml(searchText(post.title, post.description))}">
   <header class="lec-post-header">
     <p class="lec-post-kicker">${escapeHtml(post.category)}</p>
     <h1 class="lec-post-title">${escapeHtml(post.title)}</h1>
