@@ -9,7 +9,11 @@
 
   ready(() => {
     if (window.lucide) {
-      window.lucide.createIcons();
+      try {
+        window.lucide.createIcons();
+      } catch (error) {
+        console.error("Failed to initialize Lucide icons:", error);
+      }
     }
 
     const body = document.body;

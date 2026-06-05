@@ -31,11 +31,21 @@ function parseFrontMatter(text) {
 }
 
 async function readPostEntries() {
-  const entries = await fs.readdir(blogDir);
+  let entries;
+  try {
+    entries = await fs.readdir(blogDir);
+  } catch (error) {
+    throw new Error(`Failed to read _blog directory: ${error.message}`);
+  }
   const posts = [];
 
   for (const name of entries.filter((entry) => /^\d{5}\.md$/.test(entry)).sort()) {
-    const source = await fs.readFile(path.join(blogDir, name), "utf8");
+    let source;
+    try {
+      source = await fs.readFile(path.join(blogDir, name), "utf8");
+    } catch (error) {
+      throw new Error(`Failed to read _blog/${name}: ${error.message}`);
+    }
     const data = parseFrontMatter(source);
     posts.push({
       id: name.replace(/\.md$/, ""),
@@ -48,7 +58,11 @@ async function readPostEntries() {
 }
 
 async function readOutput(route) {
-  return fs.readFile(path.join(outDir, route), "utf8");
+  try {
+    return await fs.readFile(path.join(outDir, route), "utf8");
+  } catch (error) {
+    throw new Error(`Failed to read build output ${route}: ${error.message}`);
+  }
 }
 
 async function assertFileExists(filePath, label) {
@@ -59,46 +73,55 @@ async function assertFileExists(filePath, label) {
   }
 }
 
-const posts = await readPostEntries();
-const published = posts.filter((post) => !post.draft);
+async function verify() {
+  const posts = await readPostEntries();
+  const published = posts.filter((post) => !post.draft);
 
-await assertFileExists(path.join(outDir, "index.html"), "Home page");
-await assertFileExists(path.join(outDir, "archive", "index.html"), "Archive page");
-await assertFileExists(path.join(outDir, "_redirects"), "Cloudflare redirects");
+  await assertFileExists(path.join(outDir, "index.html"), "Home page");
+  await assertFileExists(path.join(outDir, "archive", "index.html"), "Archive page");
+  await assertFileExists(path.join(outDir, "_redirects"), "Cloudflare redirects");
 
-for (const post of posts) {
-  await assertFileExists(path.join(outDir, "posts", post.id, "index.html"), `Post ${post.id}`);
-}
+  for (const post of posts) {
+    await assertFileExists(path.join(outDir, "posts", post.id, "index.html"), `Post ${post.id}`);
+  }
 
-const homeHtml = await readOutput("index.html");
-const archiveHtml = await readOutput(path.join("archive", "index.html"));
-const redirects = await readOutput("_redirects");
-const rawTemplatePatterns = [
-  /^---\s*$/m,
-  /\{%\s*(assign|include|for|if)\b/,
-  /\{\{\s*site\./
-];
+  const homeHtml = await readOutput("index.html");
+  const archiveHtml = await readOutput(path.join("archive", "index.html"));
+  const redirects = await readOutput("_redirects");
+  const rawTemplatePatterns = [
+    /^---\s*$/m,
+    /\{%\s*(assign|include|for|if)\b/,
+    /\{\{\s*site\./
+  ];
 
-for (const [label, html] of [
-  ["Home page", homeHtml],
-  ["Archive page", archiveHtml]
-]) {
-  for (const pattern of rawTemplatePatterns) {
-    if (pattern.test(html)) {
-      throw new Error(`${label} still contains unrendered Jekyll/Liquid template syntax.`);
+  for (const [label, html] of [
+    ["Home page", homeHtml],
+    ["Archive page", archiveHtml]
+  ]) {
+    for (const pattern of rawTemplatePatterns) {
+      if (pattern.test(html)) {
+        throw new Error(`${label} still contains unrendered Jekyll/Liquid template syntax.`);
+      }
     }
   }
-}
 
-for (const post of published) {
-  const link = `/posts/${post.id}/`;
-  if (!archiveHtml.includes(link)) {
-    throw new Error(`Published post ${post.id} is missing from archive output.`);
+  for (const post of published) {
+    const link = `/posts/${post.id}/`;
+    if (!archiveHtml.includes(link)) {
+      throw new Error(`Published post ${post.id} is missing from archive output.`);
+    }
   }
+
+  if (redirects.includes("/_site/")) {
+    throw new Error("Cloudflare redirects should point inside the build output, not to /_site paths.");
+  }
+
+  console.log(`Verified _site output: ${published.length} published post(s), ${posts.length} total post file(s).`);
 }
 
-if (redirects.includes("/_site/")) {
-  throw new Error("Cloudflare redirects should point inside the build output, not to /_site paths.");
+try {
+  await verify();
+} catch (error) {
+  console.error(`Verification failed: ${error.message}`);
+  process.exit(1);
 }
-
-console.log(`Verified _site output: ${published.length} published post(s), ${posts.length} total post file(s).`);

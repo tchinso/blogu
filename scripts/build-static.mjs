@@ -92,7 +92,13 @@ function parseFrontMatter(text) {
 }
 
 async function readMarkdown(filePath) {
-  const source = await fs.readFile(path.join(root, filePath), "utf8");
+  const fullPath = path.join(root, filePath);
+  let source;
+  try {
+    source = await fs.readFile(fullPath, "utf8");
+  } catch (error) {
+    throw new Error(`Failed to read ${filePath}: ${error.message}`);
+  }
   return parseFrontMatter(source);
 }
 
@@ -236,10 +242,20 @@ async function writePage(route, html) {
 }
 
 async function loadPosts() {
-  const entries = await fs.readdir(path.join(root, "_blog"));
+  let entries;
+  try {
+    entries = await fs.readdir(path.join(root, "_blog"));
+  } catch (error) {
+    throw new Error(`Failed to read _blog directory: ${error.message}`);
+  }
   const posts = [];
   for (const entry of entries.filter((name) => /^\d{5}\.md$/.test(name)).sort()) {
-    const { data, body } = await readMarkdown(path.join("_blog", entry));
+    let data, body;
+    try {
+      ({ data, body } = await readMarkdown(path.join("_blog", entry)));
+    } catch (error) {
+      throw new Error(`Error processing _blog/${entry}: ${error.message}`);
+    }
     const id = entry.replace(/\.md$/, "");
     const html = md.render(renderLiquidLite(body));
     posts.push({
@@ -348,30 +364,49 @@ function postPage(post, ascendingPosts) {
 </article>`;
 }
 
-await fs.rm(outDir, { recursive: true, force: true });
-await fs.mkdir(outDir, { recursive: true });
-await fs.cp(path.join(root, "assets"), path.join(outDir, "assets"), { recursive: true });
-await fs.copyFile(path.join(root, "_redirects"), path.join(outDir, "_redirects"));
+async function build() {
+  await fs.rm(outDir, { recursive: true, force: true });
+  await fs.mkdir(outDir, { recursive: true });
 
-const allPosts = await loadPosts();
-const publishedDesc = allPosts
-  .filter((post) => !post.draft)
-  .sort((a, b) => String(b.date).localeCompare(String(a.date)) || b.id.localeCompare(a.id));
-const publishedAsc = [...publishedDesc].reverse();
+  try {
+    await fs.cp(path.join(root, "assets"), path.join(outDir, "assets"), { recursive: true });
+  } catch (error) {
+    throw new Error(`Failed to copy assets directory: ${error.message}`);
+  }
 
-await writePage("", shell({ title: "Home", bodyClass: "home", content: homePage(publishedDesc) }));
-await writePage("archive", shell({ title: "Archive", bodyClass: "archive", content: archivePage(publishedDesc) }));
-await writePage("tags", shell({ title: "Tags", bodyClass: "tags", content: tagsPage(publishedDesc) }));
-await writePage("projects", shell({ title: "Projects", bodyClass: "projects", content: projectsPage() }));
+  try {
+    await fs.copyFile(path.join(root, "_redirects"), path.join(outDir, "_redirects"));
+  } catch (error) {
+    throw new Error(`Failed to copy _redirects file: ${error.message}`);
+  }
 
-const about = await readMarkdown("about.md");
-await writePage("about", shell({ title: about.data.title || "About", content: md.render(renderLiquidLite(about.body)) }));
+  const allPosts = await loadPosts();
+  const publishedDesc = allPosts
+    .filter((post) => !post.draft)
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)) || b.id.localeCompare(a.id));
+  const publishedAsc = [...publishedDesc].reverse();
 
-for (const post of allPosts) {
-  await writePage(post.url, shell({ title: post.title, layout: "post", content: postPage(post, publishedAsc) }));
+  await writePage("", shell({ title: "Home", bodyClass: "home", content: homePage(publishedDesc) }));
+  await writePage("archive", shell({ title: "Archive", bodyClass: "archive", content: archivePage(publishedDesc) }));
+  await writePage("tags", shell({ title: "Tags", bodyClass: "tags", content: tagsPage(publishedDesc) }));
+  await writePage("projects", shell({ title: "Projects", bodyClass: "projects", content: projectsPage() }));
+
+  const about = await readMarkdown("about.md");
+  await writePage("about", shell({ title: about.data.title || "About", content: md.render(renderLiquidLite(about.body)) }));
+
+  for (const post of allPosts) {
+    await writePage(post.url, shell({ title: post.title, layout: "post", content: postPage(post, publishedAsc) }));
+  }
+
+  console.log(
+    `Built ${path.relative(root, outDir)} with ${publishedDesc.length} published post(s) ` +
+      `from ${allPosts.length} markdown file(s) for ${site.url}${site.baseurl || ""}/`
+  );
 }
 
-console.log(
-  `Built ${path.relative(root, outDir)} with ${publishedDesc.length} published post(s) ` +
-    `from ${allPosts.length} markdown file(s) for ${site.url}${site.baseurl || ""}/`
-);
+try {
+  await build();
+} catch (error) {
+  console.error(`Build failed: ${error.message}`);
+  process.exit(1);
+}
