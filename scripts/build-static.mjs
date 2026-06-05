@@ -268,9 +268,9 @@ function homePage(posts) {
         <div class="lec-notice-cover-scroll">
           <p class="lec-notice-lead">${escapeHtml(site.description)}</p>
           <ul class="lec-mini-list">
-            <li>글은 <code>_blog/00001.md</code>처럼 다섯 자리 번호로 관리합니다.</li>
-            <li>공개 URL은 <code>/posts/00001/</code> 형식으로 생성됩니다.</li>
-            <li><code>draft: true</code> 글은 홈과 아카이브에서 숨겨집니다.</li>
+            <li>공지사항 없음001</li>
+            <li>공지사항 없음002</li>
+            <li>공지사항 없음003</li>
           </ul>
           <a class="lec-text-link" href="${relativeUrl("archive/")}">전체 글 보기</a>
         </div>
