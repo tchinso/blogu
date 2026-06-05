@@ -36,7 +36,10 @@ exclude:
   - docs/
   - Gemfile
   - Gemfile.lock
+  - package.json
+  - package-lock.json
   - README.md
+  - scripts/
   - wrangler.toml
   - .codex-preview/
   - _site/
