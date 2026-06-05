@@ -1,0 +1,59 @@
+---
+layout: default
+---
+
+<article class="lec-post" data-search-item data-search-text="{{ page.title | append: ' ' | append: page.description | downcase | escape }}">
+  <header class="lec-post-header">
+    <p class="lec-post-kicker">{{ page.category | default: "notes" }}</p>
+    <h1 class="lec-post-title">{{ page.title }}</h1>
+
+    <div class="lec-post-meta">
+      {% if page.date %}
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+      {% endif %}
+      {% if page.tags %}
+        <span aria-hidden="true">/</span>
+        <span>
+          {% for tag in page.tags %}
+            #{{ tag }}{% unless forloop.last %} {% endunless %}
+          {% endfor %}
+        </span>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="lec-post-content">
+    {{ content }}
+  </div>
+
+  <nav class="lec-post-nav" aria-label="이전 글과 다음 글">
+    {% assign posts = site.blog | where_exp: "post", "post.draft != true" | sort: "date" %}
+    {% assign current_index = -1 %}
+    {% for item in posts %}
+      {% if item.url == page.url %}
+        {% assign current_index = forloop.index0 %}
+      {% endif %}
+    {% endfor %}
+
+    {% if current_index >= 0 %}
+      {% assign prev_index = current_index | minus: 1 %}
+      {% assign next_index = current_index | plus: 1 %}
+
+      {% if prev_index >= 0 %}
+        {% assign prev_post = posts[prev_index] %}
+        <a class="lec-post-nav-link" href="{{ prev_post.url | relative_url }}">
+          <span>Prev</span>
+          {{ prev_post.title }}
+        </a>
+      {% endif %}
+
+      {% if next_index < posts.size %}
+        {% assign next_post = posts[next_index] %}
+        <a class="lec-post-nav-link" href="{{ next_post.url | relative_url }}">
+          <span>Next</span>
+          {{ next_post.title }}
+        </a>
+      {% endif %}
+    {% endif %}
+  </nav>
+</article>

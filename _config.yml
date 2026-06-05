@@ -1,0 +1,44 @@
+title: "Paint Heart Atelier"
+description: "GitHub Pages와 Jekyll로 운영하는 번호형 핑크 다이어리 블로그"
+lang: "ko"
+timezone: "Asia/Seoul"
+
+url: "https://syk04403.github.io"
+baseurl: ""
+
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+collections:
+  blog:
+    output: true
+    permalink: /posts/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: "blog"
+    values:
+      layout: "post"
+      thumbnail: "/assets/images/profile/mascot.png"
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+default_thumbnail: "/assets/images/profile/mascot.png"
+
+exclude:
+  - docs/
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - .codex-preview/
+  - _site/

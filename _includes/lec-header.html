@@ -1,0 +1,19 @@
+<header class="lec-header">
+  <button class="lec-mobile-toggle lec-mobile-menu" type="button" aria-label="메뉴 열기" aria-controls="lec-mobile-sidebar" aria-expanded="false" data-lec-mobile-toggle>
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div class="lec-header-icons" aria-label="빠른 이동">
+    <a class="lec-icon-button" href="{{ '/' | relative_url }}" aria-label="Home">
+      <i data-lucide="home"></i>
+    </a>
+    <a class="lec-icon-button" href="{{ '/archive/' | relative_url }}" aria-label="Archive">
+      <i data-lucide="archive"></i>
+    </a>
+    <button class="lec-icon-button" type="button" data-lec-top aria-label="Top">
+      <i data-lucide="arrow-up"></i>
+    </button>
+  </div>
+</header>

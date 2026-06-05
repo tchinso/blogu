@@ -1,0 +1,14 @@
+{% assign item = include.post %}
+{% assign thumb = item.thumbnail | default: site.default_thumbnail %}
+{% capture tags_text %}{% for tag in item.tags %} {{ tag }}{% endfor %}{% endcapture %}
+<li class="lec-gallery-item" data-search-item data-search-text="{{ item.title | append: ' ' | append: item.description | append: ' ' | append: item.category | append: ' ' | append: tags_text | downcase | escape }}">
+  <a class="lec-gallery-link" href="{{ item.url | relative_url }}">
+    <div class="lec-gallery-thumb">
+      <img src="{{ thumb | relative_url }}" alt="{{ item.title }}">
+    </div>
+    <div class="lec-gallery-info">
+      <h3 class="lec-gallery-title">{{ item.title }}</h3>
+      <p class="lec-gallery-category">{{ item.category | default: "notes" }} · {{ item.date | date: "%Y.%m.%d" }}</p>
+    </div>
+  </a>
+</li>

@@ -1,0 +1,26 @@
+<section class="lec-profile lec-window" aria-label="프로필">
+  <div class="lec-profile-ribbon" aria-hidden="true"></div>
+  <div class="lec-profile-heart" aria-hidden="true"></div>
+
+  <div class="lec-window-header">
+    <span class="lec-window-header-title">
+      <img src="{{ '/assets/images/lec/mr_tit_icon.png' | relative_url }}" alt="">
+    </span>
+  </div>
+
+  <div class="lec-profile-body">
+    <a class="lec-profile-image" href="{{ '/about/' | relative_url }}">
+      <img src="{{ '/assets/images/profile/mascot.png' | relative_url }}" alt="Paint Heart Atelier profile image">
+    </a>
+  </div>
+</section>
+
+<nav class="lec-category" aria-label="카테고리">
+  <ul class="lec-category-list">
+    {% for item in site.data.nav %}
+      <li class="lec-category-item">
+        <a class="lec-category-link" href="{{ item.url | relative_url }}">{{ item.label }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

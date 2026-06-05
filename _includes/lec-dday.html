@@ -1,0 +1,10 @@
+<section class="lec-dday-cover" data-search-item data-search-text="d-day atelier opened">
+  <h2 class="lec-cover-title">{{ site.data.dday.label | default: "D-Day" }}</h2>
+  <div class="lec-dday-content" data-dday-since="{{ site.data.dday.since }}">
+    <div class="lec-dday-image">
+      <img src="{{ site.data.dday.image | default: site.default_thumbnail | relative_url }}" alt="">
+    </div>
+    <strong class="lec-dday-text" data-dday-output>D+001</strong>
+    <span class="lec-dday-subtext">{{ site.data.dday.subtitle | default: "atelier opened" }}</span>
+  </div>
+</section>

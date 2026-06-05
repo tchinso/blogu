@@ -1,0 +1,35 @@
+---
+layout: default
+title: Archive
+permalink: /archive/
+description: "전체 글 목록"
+body_class: archive
+---
+
+{% assign posts = site.blog | where_exp: "post", "post.draft != true" | sort: "date" | reverse %}
+
+<section class="lec-page-section">
+  <h1 class="lec-page-title">Archive</h1>
+
+  {% if posts.size > 0 %}
+    <ol class="lec-post-list">
+      {% for post in posts %}
+        {% capture tags_text %}{% for tag in post.tags %} {{ tag }}{% endfor %}{% endcapture %}
+        <li class="lec-post-list-item" data-search-item data-search-text="{{ post.title | append: ' ' | append: post.description | append: ' ' | append: post.category | append: ' ' | append: tags_text | downcase | escape }}">
+          <a href="{{ post.url | relative_url }}">
+            <span class="lec-post-list-number">{{ post.name | replace: '.md', '' }}</span>
+            <span class="lec-post-list-main">
+              <strong>{{ post.title }}</strong>
+              {% if post.description %}
+                <small>{{ post.description }}</small>
+              {% endif %}
+            </span>
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
+          </a>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p class="lec-soft-note">아직 공개된 글이 없어요.</p>
+  {% endif %}
+</section>
