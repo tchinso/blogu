@@ -8,12 +8,13 @@ description: "Paint Heart Atelier 소개"
   <h1 class="lec-page-title">About</h1>
 
   <p>
-    Paint Heart Atelier는 GitHub Pages와 Jekyll로 운영하는 작은 기록 공간입니다.
-    개발 메모, 블로그 운영 기록, 도구 제작 과정, Markdown 실험을 번호형 글로 차곡차곡 보관합니다.
+    냥캣의 블로그입니다.
+    여기에 적히는 내용은 <code>about.md</code>파일을 수정하면 됩니다.
   </p>
 
   <p>
-    글 파일은 <code>_blog/00001.md</code>처럼 단순한 번호로 관리하고,
-    빌드 후에는 <code>/posts/00001/</code> 주소로 열립니다.
+    <code>draft: true</code> 글은 홈과 아카이브에서 숨겨집니다...만 그냥 경로를 <code>_draft</code>로 바꾸는 게 더 편합니다
+    메인페이지 공지는 <code>index.html</code>에서 수정하면 됩니다.
+    D-day 값은 <code>_data/dday.yml</code>에서 수정하면 됩니다.
   </p>
 </section>
