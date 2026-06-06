@@ -151,12 +151,12 @@ function searchBox() {
 }
 
 function dday() {
-  return `<section class="lec-dday-cover" data-search-item data-search-text="d-day atelier opened">
+  return `<section class="lec-dday-cover" data-search-item data-search-text="d-day blog opened">
   <h2 class="lec-cover-title">D-Day</h2>
   <div class="lec-dday-content" data-dday-since="2026-06-05">
     <div class="lec-dday-image"><img src="${relativeUrl("assets/images/profile/mascot.png")}" alt=""></div>
     <strong class="lec-dday-text" data-dday-output>D+001</strong>
-    <span class="lec-dday-subtext">atelier opened</span>
+    <span class="lec-dday-subtext">blog opened</span>
   </div>
 </section>`;
 }
@@ -333,10 +333,15 @@ function projectsPage() {
   return `<section class="lec-page-section" data-search-item data-search-text="projects github pages jekyll blog">
   <h1 class="lec-page-title">Projects</h1>
   <div class="lec-project-grid">
-    <article class="lec-project-item">
-      <strong>Numbered Jekyll Blog</strong>
-      <p>날짜 파일명을 쓰지 않고 Jekyll collection으로 번호형 글을 운영하는 GitHub Pages 블로그입니다.</p>
-      <a href="${relativeUrl("posts/00001/")}">샘플 글 보기</a>
+      <strong>블로그 수정법</strong>
+      <p>Notice : <code>/scripts/build-static.mjs→function homePage(posts)</code></p>
+      <p>(Github Pages : <code>index.html</code>)</p>
+      <p>Projects : <code>/scripts/build-static.mjs→function projectsPage</code></p>
+      <p>(Github Pages : <code>pages/projects.html</code>)</p>
+      <p>About : <code>about.md</code></p>
+      <p>D-day : <code>/scripts/build-static.mjs→function dday</code></p>
+      <p>(Github Pages : <code>_data/dday.yml</code>)</p>
+      <a href="{{ 'posts/00001/' | relative_url }}">샘플 글 보기</a>
     </article>
   </div>
 </section>`;
