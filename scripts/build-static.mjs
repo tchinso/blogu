@@ -333,6 +333,7 @@ function projectsPage() {
   return `<section class="lec-page-section" data-search-item data-search-text="projects github pages jekyll blog">
   <h1 class="lec-page-title">Projects</h1>
   <div class="lec-project-grid">
+      <article class="lec-project-item">
       <strong>블로그 수정법</strong>
       <p>Notice : <code>/scripts/build-static.mjs→function homePage(posts)</code></p>
       <p>(Github Pages : <code>index.html</code>)</p>
