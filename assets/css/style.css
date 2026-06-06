@@ -933,6 +933,71 @@ pre {
   line-height: 1.8;
 }
 
+.lec-password-panel {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--lec-bg);
+  border: 2px solid var(--lec-point-bd);
+  border-radius: 13px;
+}
+
+.lec-password-panel h2 {
+  margin: 0;
+  color: var(--lec-point);
+  font-family: var(--lec-font-cute), var(--lec-font-jp), sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.4;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.lec-password-form {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.lec-password-form input {
+  min-width: 0;
+  height: 34px;
+  flex: 1;
+  padding: 0 10px;
+  color: var(--lec-point);
+  background: #fff;
+  border: 2px solid var(--lec-point-bd);
+  border-radius: 10px;
+  outline: 0;
+}
+
+.lec-password-form input:focus {
+  box-shadow: 0 0 0 3px var(--lec-point-bg);
+}
+
+.lec-password-form button {
+  min-width: 72px;
+  height: 34px;
+  padding: 0 12px;
+  color: #fff;
+  background: var(--lec-point);
+  border: 2px solid var(--lec-point-bd);
+  border-radius: 10px;
+  font-weight: var(--lec-fw-bold);
+}
+
+.lec-password-form button:hover,
+.lec-password-form button:focus-visible {
+  background: var(--lec-sub);
+  outline: none;
+}
+
+.lec-password-status {
+  min-height: 18px;
+  margin: 8px 0 0;
+  color: var(--lec-sub);
+  font-size: 11px;
+  font-weight: var(--lec-fw-bold);
+}
+
 .lec-post-content > *:first-child {
   margin-top: 0;
 }
@@ -1561,6 +1626,14 @@ pre {
 
   .lec-post {
     padding: 10px;
+  }
+
+  .lec-password-form {
+    flex-direction: column;
+  }
+
+  .lec-password-form button {
+    width: 100%;
   }
 
   .lec-post-nav,

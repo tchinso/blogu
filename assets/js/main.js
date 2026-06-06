@@ -94,6 +94,83 @@
       });
     }
 
+    const passwordEncoder = new TextEncoder();
+    const passwordDecoder = new TextDecoder();
+    const lockedContentPrefix = "lec-password-content:";
+    const bytesFromBase64 = (value) =>
+      Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
+
+    const unlockPasswordGate = (gate, html) => {
+      const root = gate.closest(".lec-post") || document;
+      root.querySelectorAll("[data-lec-password-content]").forEach((content) => {
+        if (html && content.classList.contains("lec-post-content")) {
+          content.innerHTML = html;
+        }
+        content.hidden = false;
+      });
+      gate.hidden = true;
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    };
+
+    const decodeLockedHtml = (gate, password) => {
+      const payload = bytesFromBase64(gate.dataset.lecPasswordPayload || "");
+      const key = passwordEncoder.encode(password);
+      const decoded = new Uint8Array(payload.length);
+
+      for (let index = 0; index < payload.length; index += 1) {
+        decoded[index] = payload[index] ^ key[index % key.length];
+      }
+
+      const text = passwordDecoder.decode(decoded);
+      if (!text.startsWith(lockedContentPrefix)) {
+        throw new Error("Password mismatch.");
+      }
+
+      return text.slice(lockedContentPrefix.length);
+    };
+
+    document.querySelectorAll("[data-lec-password-gate]").forEach((gate) => {
+      const form = gate.querySelector("[data-lec-password-form]");
+      const input = gate.querySelector("[data-lec-password-input]");
+      const status = gate.querySelector("[data-lec-password-status]");
+      if (!form || !input) return;
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const password = input.value;
+
+        if (!password) {
+          if (status) status.textContent = "Enter password.";
+          input.focus();
+          return;
+        }
+
+        input.disabled = true;
+        if (status) status.textContent = "Checking...";
+
+        try {
+          if (gate.dataset.lecPasswordPayload) {
+            unlockPasswordGate(gate, decodeLockedHtml(gate, password));
+          } else if (gate.dataset.lecPasswordSecret === password) {
+            unlockPasswordGate(gate);
+          } else {
+            throw new Error("Password mismatch.");
+          }
+        } catch {
+          if (status) status.textContent = "Wrong password.";
+          input.disabled = false;
+          input.select();
+          input.focus();
+          return;
+        }
+
+        input.disabled = false;
+      });
+    });
+
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 768px)");
     const cursor = document.querySelector(".lec-heart-cursor");
     const particles = [];

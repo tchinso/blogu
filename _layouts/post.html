@@ -22,12 +22,25 @@ layout: default
     </div>
   </header>
 
-  <div class="lec-post-content">
+  {% assign post_password = page.password | default: "" | strip %}
+  {% if post_password != "" %}
+    <section class="lec-password-panel" data-lec-password-gate data-lec-password-secret="{{ post_password | escape }}">
+      <h2>Password required</h2>
+      <form class="lec-password-form" data-lec-password-form>
+        <label class="lec-sr-only" for="lec-password-input">Password</label>
+        <input id="lec-password-input" type="password" autocomplete="current-password" placeholder="Password" data-lec-password-input>
+        <button type="submit">Open</button>
+      </form>
+      <p class="lec-password-status" data-lec-password-status></p>
+    </section>
+  {% endif %}
+
+  <div class="lec-post-content"{% if post_password != "" %} data-lec-password-content hidden{% endif %}>
     {{ content }}
   </div>
 
-  <nav class="lec-post-nav" aria-label="이전 글과 다음 글">
-    {% assign posts = site.blog | where_exp: "post", "post.draft != true" | sort: "date" %}
+  <nav class="lec-post-nav" aria-label="이전 글과 다음 글"{% if post_password != "" %} data-lec-password-content hidden{% endif %}>
+    {% assign posts = site.blog | sort: "date" %}
     {% assign current_index = -1 %}
     {% for item in posts %}
       {% if item.url == page.url %}

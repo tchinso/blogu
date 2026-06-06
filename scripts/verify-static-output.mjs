@@ -39,8 +39,7 @@ async function readPostEntries() {
     const data = parseFrontMatter(source);
     posts.push({
       id: name.replace(/\.md$/, ""),
-      name,
-      draft: data.draft === true
+      name
     });
   }
 
@@ -60,7 +59,6 @@ async function assertFileExists(filePath, label) {
 }
 
 const posts = await readPostEntries();
-const published = posts.filter((post) => !post.draft);
 
 await assertFileExists(path.join(outDir, "index.html"), "Home page");
 await assertFileExists(path.join(outDir, "archive", "index.html"), "Archive page");
@@ -90,10 +88,10 @@ for (const [label, html] of [
   }
 }
 
-for (const post of published) {
+for (const post of posts) {
   const link = `/posts/${post.id}/`;
   if (!archiveHtml.includes(link)) {
-    throw new Error(`Published post ${post.id} is missing from archive output.`);
+    throw new Error(`Post ${post.id} is missing from archive output.`);
   }
 }
 
@@ -101,4 +99,4 @@ if (redirects.includes("/_site/")) {
   throw new Error("Cloudflare redirects should point inside the build output, not to /_site paths.");
 }
 
-console.log(`Verified _site output: ${published.length} published post(s), ${posts.length} total post file(s).`);
+console.log(`Verified _site output: ${posts.length} post file(s).`);

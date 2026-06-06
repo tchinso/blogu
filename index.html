@@ -4,7 +4,7 @@ title: Home
 body_class: home
 ---
 
-{% assign posts = site.blog | where_exp: "post", "post.draft != true" | sort: "date" | reverse %}
+{% assign posts = site.blog | sort: "date" | reverse %}
 
 <section class="lec-cover" aria-label="홈">
   <div class="lec-cover-row">

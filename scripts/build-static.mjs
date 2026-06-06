@@ -58,6 +58,20 @@ const relativeUrl = (value = "") => {
 };
 
 const absoluteUrl = (value = "") => `${site.url.replace(/\/$/, "")}${relativeUrl(value)}`;
+const normalizePassword = (value) => String(value ?? "").trim();
+const lockedContentPrefix = "lec-password-content:";
+
+function encodeLockedHtml(html, password) {
+  const content = Buffer.from(`${lockedContentPrefix}${html}`, "utf8");
+  const key = Buffer.from(password, "utf8");
+  const encoded = Buffer.alloc(content.length);
+
+  for (let index = 0; index < content.length; index += 1) {
+    encoded[index] = content[index] ^ key[index % key.length];
+  }
+
+  return encoded.toString("base64");
+}
 
 const renderLiquidLite = (text) =>
   text.replace(/\{\{\s*['"]([^'"]+)['"]\s*\|\s*relative_url\s*\}\}/g, (_, target) => relativeUrl(target));
@@ -242,6 +256,7 @@ async function loadPosts() {
     const { data, body } = await readMarkdown(path.join("_blog", entry));
     const id = entry.replace(/\.md$/, "");
     const html = md.render(renderLiquidLite(body));
+    const password = normalizePassword(data.password);
     posts.push({
       id,
       name: entry,
@@ -250,7 +265,8 @@ async function loadPosts() {
       tags: Array.isArray(data.tags) ? data.tags : [],
       category: data.category || "notes",
       description: data.description || "",
-      draft: data.draft === true,
+      passwordProtected: password.length > 0,
+      passwordPayload: password ? encodeLockedHtml(html, password) : null,
       thumbnail: data.thumbnail || site.defaultThumbnail,
       url: `posts/${id}/`,
       html
@@ -326,10 +342,31 @@ function projectsPage() {
 </section>`;
 }
 
+function passwordGate(post) {
+  const payloadAttrs = post.passwordPayload
+    ? ` data-lec-password-payload="${escapeHtml(post.passwordPayload)}"`
+    : "";
+
+  return `<section class="lec-password-panel" data-lec-password-gate${payloadAttrs}>
+    <h2>Password required</h2>
+    <form class="lec-password-form" data-lec-password-form>
+      <label class="lec-sr-only" for="lec-password-input-${escapeHtml(post.id)}">Password</label>
+      <input id="lec-password-input-${escapeHtml(post.id)}" type="password" autocomplete="current-password" placeholder="Password" data-lec-password-input>
+      <button type="submit">Open</button>
+    </form>
+    <p class="lec-password-status" data-lec-password-status></p>
+  </section>`;
+}
+
 function postPage(post, ascendingPosts) {
   const index = ascendingPosts.findIndex((item) => item.id === post.id);
   const prev = index > 0 ? ascendingPosts[index - 1] : null;
   const next = index < ascendingPosts.length - 1 ? ascendingPosts[index + 1] : null;
+  const content = post.passwordProtected
+    ? `${passwordGate(post)}<div class="lec-post-content" data-lec-password-content hidden></div>`
+    : `<div class="lec-post-content">${post.html}</div>`;
+  const navAttrs = post.passwordProtected ? " data-lec-password-content hidden" : "";
+
   return `<article class="lec-post" data-search-item data-search-text="${escapeHtml([post.title, post.description].join(" ").toLowerCase())}">
   <header class="lec-post-header">
     <p class="lec-post-kicker">${escapeHtml(post.category)}</p>
@@ -340,8 +377,8 @@ function postPage(post, ascendingPosts) {
       <span>${post.tags.map((tag) => `#${escapeHtml(tag)}`).join(" ")}</span>
     </div>
   </header>
-  <div class="lec-post-content">${post.html}</div>
-  <nav class="lec-post-nav" aria-label="이전 글과 다음 글">
+  ${content}
+  <nav class="lec-post-nav" aria-label="이전 글과 다음 글"${navAttrs}>
     ${prev ? `<a class="lec-post-nav-link" href="${relativeUrl(prev.url)}"><span>Prev</span>${escapeHtml(prev.title)}</a>` : ""}
     ${next ? `<a class="lec-post-nav-link" href="${relativeUrl(next.url)}"><span>Next</span>${escapeHtml(next.title)}</a>` : ""}
   </nav>
@@ -354,24 +391,23 @@ await fs.cp(path.join(root, "assets"), path.join(outDir, "assets"), { recursive:
 await fs.copyFile(path.join(root, "_redirects"), path.join(outDir, "_redirects"));
 
 const allPosts = await loadPosts();
-const publishedDesc = allPosts
-  .filter((post) => !post.draft)
+const postsDesc = allPosts
   .sort((a, b) => String(b.date).localeCompare(String(a.date)) || b.id.localeCompare(a.id));
-const publishedAsc = [...publishedDesc].reverse();
+const postsAsc = [...postsDesc].reverse();
 
-await writePage("", shell({ title: "Home", bodyClass: "home", content: homePage(publishedDesc) }));
-await writePage("archive", shell({ title: "Archive", bodyClass: "archive", content: archivePage(publishedDesc) }));
-await writePage("tags", shell({ title: "Tags", bodyClass: "tags", content: tagsPage(publishedDesc) }));
+await writePage("", shell({ title: "Home", bodyClass: "home", content: homePage(postsDesc) }));
+await writePage("archive", shell({ title: "Archive", bodyClass: "archive", content: archivePage(postsDesc) }));
+await writePage("tags", shell({ title: "Tags", bodyClass: "tags", content: tagsPage(postsDesc) }));
 await writePage("projects", shell({ title: "Projects", bodyClass: "projects", content: projectsPage() }));
 
 const about = await readMarkdown("about.md");
 await writePage("about", shell({ title: about.data.title || "About", content: md.render(renderLiquidLite(about.body)) }));
 
 for (const post of allPosts) {
-  await writePage(post.url, shell({ title: post.title, layout: "post", content: postPage(post, publishedAsc) }));
+  await writePage(post.url, shell({ title: post.title, layout: "post", content: postPage(post, postsAsc) }));
 }
 
 console.log(
-  `Built ${path.relative(root, outDir)} with ${publishedDesc.length} published post(s) ` +
+  `Built ${path.relative(root, outDir)} with ${postsDesc.length} post(s) ` +
     `from ${allPosts.length} markdown file(s) for ${site.url}${site.baseurl || ""}/`
 );

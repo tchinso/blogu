@@ -6,7 +6,7 @@ description: "태그별 글 목록"
 body_class: tags
 ---
 
-{% assign posts = site.blog | where_exp: "post", "post.draft != true" %}
+{% assign posts = site.blog %}
 {% assign raw_tags = "" %}
 {% for post in posts %}
   {% for tag in post.tags %}

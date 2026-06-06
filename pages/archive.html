@@ -6,7 +6,7 @@ description: "전체 글 목록"
 body_class: archive
 ---
 
-{% assign posts = site.blog | where_exp: "post", "post.draft != true" | sort: "date" | reverse %}
+{% assign posts = site.blog | sort: "date" | reverse %}
 
 <section class="lec-page-section">
   <h1 class="lec-page-title">Archive</h1>
