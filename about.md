@@ -12,6 +12,6 @@ description: "Paint Heart Atelier 소개"
   </p>
 
   <p>
-    아직 공사중
+    주로 리뷰나 인간 고찰글을 올릴 예정
   </p>
 </section>
