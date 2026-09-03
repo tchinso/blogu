@@ -4,16 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-static.mjs && node scripts/verify-static-output.mjs",
-    "build:cloudflare": "node scripts/build-static.mjs --url=https://blogu.pages.dev --baseurl= && node scripts/verify-static-output.mjs",
-    "build:github-preview": "node scripts/build-static.mjs --url=https://tchinso.github.io --baseurl=/blogu && node scripts/verify-static-output.mjs",
+    "build": "bundle exec jekyll clean && bundle exec jekyll build && node scripts/verify-static-output.mjs",
+    "build:cloudflare": "bundle install && bundle exec jekyll clean && bundle exec jekyll build --config _config.yml,_config.cloudflare.yml && node scripts/verify-static-output.mjs",
+    "build:github-preview": "bundle exec jekyll clean && bundle exec jekyll build --config _config.yml && node scripts/verify-static-output.mjs",
     "verify": "node scripts/verify-static-output.mjs"
-  },
-  "dependencies": {
-    "markdown-it": "^14.1.0",
-    "markdown-it-deflist": "^3.0.0",
-    "markdown-it-footnote": "^4.0.0",
-    "markdown-it-mark": "^4.0.0",
-    "markdown-it-task-lists": "^2.1.1"
   }
 }

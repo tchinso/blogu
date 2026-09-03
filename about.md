@@ -14,4 +14,8 @@ description: "Paint Heart Atelier 소개"
   <p>
     주로 리뷰나 인간 고찰글을 올릴 예정
   </p>
+
+  <div class="lec-about-dday">
+    {% include lec-dday.html %}
+  </div>
 </section>

@@ -6,32 +6,33 @@ body_class: home
 
 {% assign posts = site.blog | sort: "date" | reverse %}
 
-<section class="lec-cover" aria-label="홈">
-  <div class="lec-cover-row">
-    <section class="lec-notice-cover" data-search-item data-search-text="{{ site.title | append: ' notice github pages jekyll markdown' | downcase | escape }}">
-      <h2 class="lec-cover-title">Notice</h2>
-      <div class="lec-notice-cover-inner">
-        <div class="lec-notice-cover-scroll">
-          <p class="lec-notice-lead">{{ site.description }}</p>
-          <ul class="lec-mini-list">
-            <li>공지사항 없음 001</li>
-            <li>공지사항 없음 002</li>
-            <li>공지사항 없음 003</li>
-          </ul>
-          <a class="lec-text-link" href="{{ 'archive/' | relative_url }}">전체 글 보기</a>
-        </div>
-      </div>
-    </section>
+<section class="lec-home" aria-label="홈">
+  <!--
+    공지의 한 줄 제목과 펼쳤을 때 보이는 내용을 여기서 바로 고치면 됩니다.
+    Cloudflare Pages와 GitHub Pages 모두 이 index.html을 그대로 빌드합니다.
+  -->
+  <details class="lec-notice-bar" data-search-item data-search-text="공지사항 블로그 안내">
+    <summary>
+      <span class="lec-notice-label">Notice</span>
+      <strong class="lec-notice-title">블로그를 천천히 정리하고 있어요.</strong>
+      <span class="lec-notice-teaser">눌러서 자세히 보기</span>
+    </summary>
+    <div class="lec-notice-body">
+      <p>리뷰와 인간 고찰글을 차곡차곡 올릴 예정입니다.</p>
+      <p>새 글은 아래 목록에서 바로 확인할 수 있어요.</p>
+    </div>
+  </details>
 
-    {% include lec-dday.html %}
-  </div>
+  <section class="lec-post-feed-cover" aria-labelledby="recent-posts-title">
+    <div class="lec-post-feed-heading">
+      <h2 id="recent-posts-title">Recent posts</h2>
+      <span>{{ posts.size }} posts</span>
+    </div>
 
-  <section class="lec-gallery-cover">
-    <h2 class="lec-cover-title">Recent</h2>
     {% if posts.size > 0 %}
-      <ul class="lec-gallery-list">
-        {% for post in posts limit: 8 %}
-          {% include lec-gallery-card.html post=post %}
+      <ul class="lec-post-feed">
+        {% for post in posts %}
+          {% include lec-post-feed-card.html post=post %}
         {% endfor %}
       </ul>
     {% else %}

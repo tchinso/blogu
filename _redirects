@@ -4,7 +4,6 @@
 #   Build output directory: _site
 
 /posts/:id /posts/:id/index.html 200
-/archive /archive/index.html 200
 /tags /tags/index.html 200
-/projects /projects/index.html 200
 /about /about/index.html 200
+/writer /writer/index.html 200

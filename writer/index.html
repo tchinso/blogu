@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ff7da4">
+  <meta name="description" content="Blogu용 UTF-8 Markdown 파일 작성 도구">
+  <title>Blogu MD Writer</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/writer.css">
+</head>
+<body class="writer-page">
+  <header class="writer-topbar">
+    <div class="writer-topbar-inner">
+      <a class="writer-back-link" href="../" aria-label="Blogu 홈으로 돌아가기">← Blogu</a>
+      <p class="writer-brand">MD Writer</p>
+      <span class="writer-local-note">내 브라우저에서만 작성돼요</span>
+    </div>
+  </header>
+
+  <main class="writer-shell">
+    <section class="writer-heading" aria-labelledby="writer-page-title">
+      <div>
+        <p class="writer-eyebrow">BLOGU POST MAKER</p>
+        <h1 id="writer-page-title">글을 쓰고, <em>md</em> 파일로 받아요.</h1>
+      </div>
+      <div class="writer-heading-actions">
+        <button class="writer-text-button" id="writer-restore" type="button" hidden>저장된 초안 불러오기</button>
+        <span class="writer-draft-state" id="writer-draft-state" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <form id="writer-form" class="writer-form" novalidate>
+      <section class="writer-card writer-meta-card" aria-labelledby="writer-meta-title">
+        <div class="writer-section-heading">
+          <div>
+            <p class="writer-section-kicker">FRONT MATTER</p>
+            <h2 id="writer-meta-title">게시글 정보</h2>
+          </div>
+          <p>다운로드 파일은 <code>_blog/00001.md</code> 형태예요.</p>
+        </div>
+
+        <div class="writer-meta-grid">
+          <label class="writer-field writer-id-field" for="writer-id">
+            <span>파일 번호 <b>필수</b></span>
+            <input id="writer-id" name="id" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="00001" aria-describedby="writer-id-help">
+            <small id="writer-id-help">숫자 다섯 자리만 입력해요.</small>
+          </label>
+
+          <label class="writer-field" for="writer-date">
+            <span>날짜 <b>필수</b></span>
+            <input id="writer-date" name="date" type="date" required>
+          </label>
+
+          <label class="writer-field writer-title-field" for="writer-title">
+            <span>제목 <b>필수</b></span>
+            <input id="writer-title" name="title" type="text" maxlength="180" autocomplete="off" placeholder="글의 제목을 입력해 주세요" required>
+          </label>
+
+          <label class="writer-field" for="writer-category">
+            <span>Category</span>
+            <input id="writer-category" name="category" type="text" maxlength="60" autocomplete="off" value="notes" placeholder="notes">
+          </label>
+
+          <label class="writer-field writer-tags-field" for="writer-tags">
+            <span>Tags</span>
+            <input id="writer-tags" name="tags" type="text" maxlength="240" autocomplete="off" placeholder="review, diary, markdown" aria-describedby="writer-tags-help">
+            <small id="writer-tags-help">쉼표로 구분해요.</small>
+            <span class="writer-tag-preview" id="writer-tag-preview" aria-label="입력한 태그"></span>
+          </label>
+
+          <label class="writer-field writer-description-field" for="writer-description">
+            <span>Description</span>
+            <input id="writer-description" name="description" type="text" maxlength="280" autocomplete="off" placeholder="글 목록과 검색에 쓰일 짧은 설명">
+          </label>
+
+          <label class="writer-field writer-thumbnail-field" for="writer-thumbnail">
+            <span>Thumbnail 경로</span>
+            <input id="writer-thumbnail" name="thumbnail" type="text" autocomplete="off" value="assets/images/profile/mascot.png" placeholder="/assets/images/strawberry.png" aria-describedby="writer-thumbnail-help">
+            <small id="writer-thumbnail-help">실제 업로드는 하지 않고 경로만 저장해요.</small>
+          </label>
+
+          <div class="writer-thumbnail-placeholder" id="writer-thumbnail-preview" aria-live="polite">
+            <span>THUMBNAIL</span>
+            <code>/assets/images/profile/mascot.png</code>
+          </div>
+
+          <label class="writer-field writer-password-field" for="writer-password">
+            <span>Password <i>선택</i></span>
+            <span class="writer-password-control">
+              <input id="writer-password" name="password" type="password" autocomplete="new-password" placeholder="비공개 글의 비밀번호">
+              <button id="writer-password-toggle" type="button" aria-label="비밀번호 표시">보기</button>
+            </span>
+            <small>비밀번호는 초안에 저장하지 않아요. 정적 사이트의 잠금은 완전한 보안 기능이 아니에요.</small>
+          </label>
+        </div>
+      </section>
+
+      <section class="writer-card writer-workspace" aria-labelledby="writer-workspace-title">
+        <div class="writer-section-heading writer-workspace-heading">
+          <div>
+            <p class="writer-section-kicker">MARKDOWN</p>
+            <h2 id="writer-workspace-title">본문</h2>
+          </div>
+          <p>왼쪽은 원본, 오른쪽은 Blogu 문법 기준 미리보기예요.</p>
+        </div>
+
+        <div class="writer-toolbar" role="toolbar" aria-label="Markdown 문법 넣기">
+          <div class="writer-toolbar-group" aria-label="제목">
+            <button type="button" data-writer-template="heading-1" title="H1 제목">H1</button>
+            <button type="button" data-writer-template="heading-2" title="H2 제목">H2</button>
+            <button type="button" data-writer-template="heading-3" title="H3 제목">H3</button>
+            <button type="button" data-writer-template="heading-4" title="H4 제목">H4</button>
+            <button type="button" data-writer-template="heading-5" title="H5 제목">H5</button>
+            <button type="button" data-writer-template="heading-6" title="H6 제목">H6</button>
+          </div>
+          <div class="writer-toolbar-group" aria-label="인라인 서식">
+            <button type="button" data-writer-template="bold" title="굵게"><strong>B</strong></button>
+            <button type="button" data-writer-template="italic" title="기울임"><em>I</em></button>
+            <button type="button" data-writer-template="bold-italic" title="굵게와 기울임"><strong><em>BI</em></strong></button>
+            <button type="button" data-writer-template="strike" title="취소선">S</button>
+            <button type="button" data-writer-template="inline-code" title="인라인 코드">&lt;/&gt;</button>
+            <button type="button" data-writer-template="mark" title="강조 표시 (mark 태그)">&lt;mark&gt;</button>
+            <button type="button" data-writer-template="link" title="링크">링크</button>
+          </div>
+          <div class="writer-toolbar-group" aria-label="블록 서식">
+            <button type="button" data-writer-template="rule" title="수평선">―</button>
+            <button type="button" data-writer-template="unordered-list" title="중첩 가능한 목록">목록</button>
+            <button type="button" data-writer-template="ordered-list" title="번호 목록">1.</button>
+            <button type="button" data-writer-template="task-list" title="체크리스트">☑</button>
+            <button type="button" data-writer-template="quote" title="중첩 인용문">인용</button>
+            <button type="button" data-writer-template="code-block" title="언어 지정 코드 블록">코드</button>
+            <button type="button" data-writer-template="table" title="표">표</button>
+          </div>
+          <div class="writer-toolbar-group" aria-label="확장 문법">
+            <button type="button" data-writer-template="details" title="접기 영역">접기</button>
+            <button type="button" data-writer-template="definition-list" title="정의 목록">정의</button>
+            <button type="button" data-writer-template="footnote" title="각주">각주</button>
+            <button type="button" data-writer-template="image" title="입력한 경로로 Markdown 이미지 넣기">이미지</button>
+            <button type="button" data-writer-template="kbd" title="키보드 키">KBD</button>
+            <button type="button" data-writer-template="small" title="작은 글자">small</button>
+            <button type="button" data-writer-template="figure" title="HTML figure 템플릿">figure</button>
+            <button type="button" data-writer-template="html" title="HTML kbd, mark, small 예시">HTML</button>
+          </div>
+        </div>
+
+        <div class="writer-editor-grid">
+          <section class="writer-source-pane" aria-labelledby="writer-source-title">
+            <div class="writer-pane-heading">
+              <h3 id="writer-source-title">Markdown 원본</h3>
+              <span id="writer-count" aria-live="polite">0자 · 0단어</span>
+            </div>
+            <textarea id="writer-body" name="body" spellcheck="true" placeholder="# 첫 번째 제목&#10;&#10;본문을 자유롭게 적어 주세요.&#10;&#10;이미지는 아래의 경로 입력 상자에서 넣을 수 있어요."></textarea>
+
+            <section class="writer-image-panel" aria-labelledby="writer-image-title">
+              <div class="writer-image-panel-heading">
+                <div>
+                  <p class="writer-section-kicker">IMAGE PATH</p>
+                  <h3 id="writer-image-title">이미지 자리 넣기</h3>
+                </div>
+                <p>업로드 없이 경로만 Markdown에 넣어요.</p>
+              </div>
+              <div class="writer-image-fields">
+                <label for="writer-image-path">이미지 경로
+                  <input id="writer-image-path" type="text" autocomplete="off" placeholder="/assets/images/strawberry.png">
+                </label>
+                <label for="writer-image-alt">대체 텍스트
+                  <input id="writer-image-alt" type="text" maxlength="160" autocomplete="off" placeholder="strawberry">
+                </label>
+                <label for="writer-image-caption">캡션 <i>선택</i>
+                  <input id="writer-image-caption" type="text" maxlength="200" autocomplete="off" placeholder="이미지 설명">
+                </label>
+              </div>
+              <div class="writer-image-bottom-row">
+                <div class="writer-image-placeholder" id="writer-image-preview" aria-live="polite">
+                  <span>IMAGE PLACEHOLDER</span>
+                  <code>/assets/images/strawberry.png</code>
+                </div>
+                <div class="writer-image-actions">
+                  <button class="writer-secondary-button" id="writer-insert-image" type="button">Markdown 이미지 넣기</button>
+                  <button class="writer-secondary-button" id="writer-insert-figure" type="button">figure + caption 넣기</button>
+                </div>
+              </div>
+            </section>
+          </section>
+
+          <section class="writer-preview-pane" aria-labelledby="writer-preview-title">
+            <div class="writer-pane-heading">
+              <h3 id="writer-preview-title">미리보기</h3>
+              <span id="writer-preview-status" aria-live="polite">실시간 반영</span>
+            </div>
+            <article class="writer-preview-meta" aria-label="게시글 머리말 미리보기">
+              <div class="writer-preview-thumbnail" id="writer-preview-thumbnail"><code>/assets/images/profile/mascot.png</code></div>
+              <div>
+                <p id="writer-preview-category">notes</p>
+                <h4 id="writer-preview-post-title">제목 미리보기</h4>
+                <time id="writer-preview-date">날짜 미리보기</time>
+              </div>
+            </article>
+            <iframe id="writer-preview" class="writer-preview-frame" title="Markdown 미리보기" sandbox="allow-same-origin"></iframe>
+          </section>
+        </div>
+      </section>
+
+      <footer class="writer-actions">
+        <p id="writer-status" class="writer-status" role="status" aria-live="polite">UTF-8 (BOM 없음)으로 다운로드돼요.</p>
+        <div>
+          <button id="writer-clear" class="writer-quiet-button" type="button">작성 내용 지우기</button>
+          <button class="writer-download-button" type="submit" data-writer-download>blogu용 md파일 다운로드</button>
+        </div>
+      </footer>
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-footnote@4.0.0/dist/markdown-it-footnote.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-deflist@3.0.0/dist/markdown-it-deflist.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js" defer></script>
+  <script src="../assets/js/writer.js" defer></script>
+</body>
+</html>

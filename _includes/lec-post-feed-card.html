@@ -1,0 +1,20 @@
+{% assign item = include.post %}
+{% assign thumb = item.thumbnail | default: site.default_thumbnail %}
+{% capture tags_text %}{% for tag in item.tags %} {{ tag }}{% endfor %}{% endcapture %}
+<li class="lec-post-feed-item" data-search-item data-search-text="{{ item.title | append: ' ' | append: item.description | append: ' ' | append: item.category | append: ' ' | append: tags_text | downcase | escape }}">
+  <a class="lec-post-feed-link" href="{{ item.url | relative_url }}">
+    <div class="lec-post-feed-main">
+      <h3 class="lec-post-feed-title">{{ item.title }}</h3>
+      <div class="lec-post-feed-meta">
+        <span class="lec-post-feed-category">{{ item.category | default: "notes" }}</span>
+        <time datetime="{{ item.date | date_to_xmlschema }}">{{ item.date | date: "%Y.%m.%d" }}</time>
+      </div>
+      {% if item.description %}
+        <p class="lec-post-feed-description">{{ item.description }}</p>
+      {% endif %}
+    </div>
+    <div class="lec-post-feed-thumb">
+      <img src="{{ thumb | relative_url }}" alt="{{ item.title }}">
+    </div>
+  </a>
+</li>

@@ -32,6 +32,10 @@ defaults:
 
 default_thumbnail: "assets/images/profile/mascot.png"
 
+# Cloudflare Pages uses this Netlify-compatible rewrite file from the Jekyll output.
+include:
+  - _redirects
+
 exclude:
   - docs/
   - Gemfile

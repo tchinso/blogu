@@ -1,4 +1,5 @@
 source "https://rubygems.org"
 
-gem "github-pages", group: :jekyll_plugins
+# Pin to GitHub Pages' published build stack so both hosts render the same source.
+gem "github-pages", "= 232", group: :jekyll_plugins
 gem "webrick", "~> 1.9"
