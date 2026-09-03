@@ -4,4 +4,5 @@ source "https://rubygems.org"
 # meta gem makes Jekyll load Primer's bundled SCSS, which fails to compile on
 # Cloudflare's Ruby/Sass runtime before our source is rendered.
 gem "jekyll", "~> 3.10"
+gem "kramdown-parser-gfm", "~> 1.1"
 gem "webrick", "~> 1.9"
