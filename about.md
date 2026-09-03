@@ -8,11 +8,15 @@ description: "Paint Heart Atelier 소개"
   <h1 class="lec-page-title">About</h1>
 
   <p>
-    냥캣의 블로그입니다.
+    난 기분이 조금만 나빠도 무조건 사과를 받아야 하지만 니가 내 말에 기분나쁘면 그건 니 피해망상임. 
   </p>
 
   <p>
-    주로 리뷰나 인간 고찰글을 올릴 예정
+    니가 나 뒷담까면 공론화 감이지만 내가 너 뒷담깔 땐 니 업보임.
+  </p>
+
+  <p>
+    니가 끝내면 정신승리지만 내가 끝내면 똥피한거임
   </p>
 
   <div class="lec-about-dday">
