@@ -15,12 +15,6 @@ description: "Paint Heart Atelier 소개"
   </p>
 </blockquote>
 
-<p id="fn1">
-  <sup>[1]</sup>
-  이 상메는 내 상메이기도 하자 냥캣이 생각하는 다른 사람들의 마음 속 상메기도 하다.
-  즉 인간 자체가 속으로 이런 식으로 생각한다고 믿는 것
-</p>
-
 <p>
   나를 포함해, 모든 인간이 내로남불이라고 생각하는 사람.
 </p>
@@ -54,4 +48,11 @@ description: "Paint Heart Atelier 소개"
   <div class="lec-about-dday">
     {% include lec-dday.html %}
   </div>
+
+  <p id="fn1">
+  <sup>[1]</sup>
+  이 상메는 내 상메이기도 하자 냥캣이 생각하는 다른 사람들의 마음 속 상메기도 하다.
+  즉 인간 자체가 속으로 이런 식으로 생각한다고 믿는 것
+</p>
+
 </section>
